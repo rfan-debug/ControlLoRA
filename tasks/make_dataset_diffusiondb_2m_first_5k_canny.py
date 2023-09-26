@@ -4,7 +4,6 @@ import cv2
 import random
 import datasets
 
-from PIL import Image, ImageFilter
 from datasets.arrow_dataset import Dataset
 from datasets.dataset_dict import DatasetDict
 from datasets.load import load_dataset

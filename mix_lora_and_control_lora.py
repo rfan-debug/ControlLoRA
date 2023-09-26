@@ -1,9 +1,9 @@
 from diffusers import utils
 from diffusers.utils import deprecation_utils
-from diffusers.models import cross_attention
+from diffusers.models import attention
 utils.deprecate = lambda *arg, **kwargs: None
 deprecation_utils.deprecate = lambda *arg, **kwargs: None
-cross_attention.deprecate = lambda *arg, **kwargs: None
+attention.deprecate = lambda *arg, **kwargs: None
 
 import os
 import torch

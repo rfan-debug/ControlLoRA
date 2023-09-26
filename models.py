@@ -8,8 +8,8 @@ from diffusers.utils.outputs import BaseOutput
 from diffusers.configuration_utils import ConfigMixin, register_to_config
 from diffusers.models.modeling_utils import ModelMixin
 from diffusers.models.unet_2d_blocks import get_down_block as get_down_block_default
-from diffusers.models.resnet import Mish, Upsample2D, Downsample2D, upsample_2d, downsample_2d, partial
-from diffusers.models.cross_attention import CrossAttention, LoRALinearLayer # , LoRACrossAttnProcessor
+from diffusers.models.resnet import Upsample2D, Downsample2D, upsample_2d, downsample_2d, partial
+from diffusers.models.attention_processor import LoRALinearLayer, Attention
 
 
 def get_down_block(
@@ -116,7 +116,7 @@ class LoRACrossAttnProcessor(nn.Module):
         self.output_states_skipped = is_skipped
 
     def __call__(
-        self, attn: CrossAttention, hidden_states, encoder_hidden_states=None, attention_mask=None, scale=1.0
+        self, attn: Attention, hidden_states, encoder_hidden_states=None, attention_mask=None, scale=1.0
     ):
         batch_size, sequence_length, _ = hidden_states.shape
         attention_mask = attn.prepare_attention_mask(attention_mask, sequence_length, batch_size)
@@ -220,7 +220,7 @@ class ControlLoRACrossAttnProcessor(LoRACrossAttnProcessor):
         return control_states
 
     def __call__(
-        self, attn: CrossAttention, hidden_states, encoder_hidden_states=None, attention_mask=None, scale=1.0
+        self, attn: Attention, hidden_states, encoder_hidden_states=None, attention_mask=None, scale=1.0
     ):
         pre_lora: LoRACrossAttnProcessor
         post_lora: LoRACrossAttnProcessor
@@ -355,7 +355,7 @@ class ControlLoRACrossAttnProcessorV2(LoRACrossAttnProcessor):
         return control_states
 
     def __call__(
-        self, attn: CrossAttention, hidden_states, encoder_hidden_states=None, attention_mask=None, scale=1.0
+        self, attn: Attention, hidden_states, encoder_hidden_states=None, attention_mask=None, scale=1.0
     ):
         pre_lora: LoRACrossAttnProcessor
         post_lora: LoRACrossAttnProcessor
@@ -487,7 +487,7 @@ class ConvBlock2D(nn.Module):
         if non_linearity == "swish":
             self.nonlinearity = lambda x: F.silu(x)
         elif non_linearity == "mish":
-            self.nonlinearity = Mish()
+            self.nonlinearity = nn.Mish()
         elif non_linearity == "silu":
             self.nonlinearity = nn.SiLU()
 
